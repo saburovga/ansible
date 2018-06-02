@@ -63,6 +63,29 @@
         group: root
         mode: 0644
 
+    - name: copy bitrixsetup.php
+      copy:
+        src: /root/ansible/roles/general/templates/bitrixsetup.php
+        dest: /var/www/html/bitrixsetup.php
+        owner: www-data
+        group: www-data
+        mode: 0664
+
+    - name: copy bitrix_server_test.php
+      copy:
+        src: /root/ansible/roles/general/templates/bitrix_server_test.php
+        dest: /var/www/html/bitrix_server_test.php
+        owner: www-data
+        group: www-data
+        mode: 0664
+
+    - name: change permitions on html folder
+      file:
+        path: /var/www/html
+        owner: www-data
+        group: www-data
+        mode: 01664
+        recurse: yes
 
 
     - name: Install list of packages
