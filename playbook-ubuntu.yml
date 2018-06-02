@@ -55,6 +55,16 @@
         line: "<VirtualHost *:8080>"
         state: present
 
+    - name: copy config file for php
+      copy:
+        src: /root/ansible/roles/apache/templates/php.ini
+        dest: /etc/php/7.0/apache2/php.ini
+        owner: root
+        group: root
+        mode: 0644
+
+
+
     - name: Install list of packages
       apt: name={{item}} state=latest
       with_items:
@@ -62,6 +72,10 @@
        - libapache2-mod-php7.0
        - php-mcrypt
        - php-mysql
+       - ssmtp
+       - php7.0-gd
+       - php7.0-xml
+       - libfreetype6
 
     - name: start apache2 service
       systemd:
