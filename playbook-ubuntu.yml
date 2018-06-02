@@ -1,5 +1,5 @@
 ---
-- hosts: ubuntu
+- hosts: ubuntu2
   remote_user: root
   gather_facts: False
   
@@ -25,10 +25,28 @@
 #        name: Percona-Server-server-57
 #        state: latest
 
-    - name: install httpd
+    - name: install apache2
       apt:
         name: apache2
         state: latest
+
+    - name: enable mod_rewrite
+      apache2_module:
+        state: present
+        name: rewrite
+
+    - name: Install list of packages
+      apt: name={{item}} state=latest
+      with_items:
+       - php
+       - libapache2-mod-php7.0
+       - php-mcrypt
+       - php-mysql
+       - ssmtp
+       - php7.0-gd
+       - php7.0-xml
+       - libfreetype6
+
 
     - name: enable apache2 on system start up
       systemd:
@@ -57,11 +75,21 @@
 
     - name: copy config file for php
       copy:
+        src: /root/ansible/roles/apache/templates/apache2.conf
+        dest: /etc/apache2/apache2.conf
+        owner: root
+        group: root
+        mode: 0644
+
+
+    - name: copy config file for php
+      copy:
         src: /root/ansible/roles/apache/templates/php.ini
         dest: /etc/php/7.0/apache2/php.ini
         owner: root
         group: root
         mode: 0644
+
 
     - name: copy bitrixsetup.php
       copy:
@@ -84,21 +112,9 @@
         path: /var/www/html
         owner: www-data
         group: www-data
-        mode: 01664
+        mode: 00774
         recurse: yes
 
-
-    - name: Install list of packages
-      apt: name={{item}} state=latest
-      with_items:
-       - php
-       - libapache2-mod-php7.0
-       - php-mcrypt
-       - php-mysql
-       - ssmtp
-       - php7.0-gd
-       - php7.0-xml
-       - libfreetype6
 
     - name: start apache2 service
       systemd:
