@@ -1,0 +1,86 @@
+---
+- hosts: centos
+  remote_user: root
+  tasks:
+    - name: test connection
+      ping:
+    #- name: check os version
+    #  shell: cat /etc/redhat-release >> /root/text.txt
+
+    - name: install mc and nano
+      yum:
+        name: mc,nano
+        state: latest
+
+    - name: add percona repository
+      yum:
+        name: http://www.percona.com/downloads/percona-release/redhat/0.1-4/percona-release-0.1-4.noarch.rpm
+        state: present
+
+    - name: add EPEL repository
+      yum:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        state: present
+
+    - name: add remi repository
+      yum:
+        name: http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+        state: present
+
+    - name: refresh index
+      yum:
+        name: '*'
+        update_cache: yes
+        state: present
+
+    - name: install percona
+      yum:
+        name: Percona-Server-server-57
+        state: latest
+
+    - name: install httpd
+      yum:
+        name: httpd
+        state: latest
+
+    - name: install nginx
+      yum:
+        name: nginx
+        state: latest
+
+    - name: install php7.0
+      yum:
+        name: php70
+        state: latest
+        enablerepo: "epel,remi-safe"
+
+    - name: enable percona on system start up
+      systemd:
+        name: mysqld
+        enabled: yes
+
+    - name: enable httpd on system start up
+      systemd:
+        name: httpd
+        enabled: yes
+
+    - name: disable firewalld service on system start up
+      systemd:
+        name: firewalld
+        enabled: no
+
+    - name: stop firewalld service
+      systemd:
+        name: firewalld
+        state: stopped
+
+
+    - name: start percona service
+      systemd:
+        name: mysqld
+        state: started
+
+    - name: start httpd service
+      systemd:
+        name: httpd
+        state: started

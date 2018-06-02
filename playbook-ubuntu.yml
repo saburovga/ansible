@@ -1,0 +1,126 @@
+---
+- hosts: ubuntu
+  remote_user: root
+  gather_facts: False
+  
+  tasks:
+    - name: install python2
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+
+    - name: test connection
+      ping:
+
+    - name: refresh index
+      apt:
+        update_cache: yes
+
+    - name: install mc and nano
+      apt:
+        name: mc,nano
+        state: latest
+
+
+#    - name: install percona
+#      yum:
+#        name: Percona-Server-server-57
+#        state: latest
+
+    - name: install httpd
+      apt:
+        name: apache2
+        state: latest
+
+    - name: enable apache2 on system start up
+      systemd:
+        name: apache2
+        enabled: yes
+
+    - name: stop apache2 service
+      systemd:
+        name: apache2
+        state: stopped
+
+
+    - name: apache2 listen on port 8080
+      lineinfile: 
+        dest: /etc/apache2/ports.conf 
+        regexp: "^Listen 80" 
+        line: "Listen 8080" 
+        state: present
+
+    - name: apache2 virtualhost listen on port 8080
+      lineinfile: 
+        dest: /etc/apache2/sites-available/000-default.conf 
+        regexp: '^<VirtualHost \*:(\d+)?'
+        line: "<VirtualHost *:8080>"
+        state: present
+
+    - name: Install list of packages
+      apt: name={{item}} state=latest
+      with_items:
+       - php
+       - libapache2-mod-php7.0
+       - php-mcrypt
+       - php-mysql
+
+    - name: start apache2 service
+      systemd:
+        name: apache2
+        state: started
+
+
+    - name: install nginx
+      apt:
+        name: nginx
+        state: latest
+
+    - name: enable nginx on system start up
+      systemd:
+        name: nginx
+        enabled: yes
+
+    - name: stop nginx service
+      systemd:
+        name: nginx
+        state: stopped
+
+    - name: copy config file for nginx
+      copy:
+        src: /root/ansible/roles/nginx/templates/redirect.conf
+        dest: /etc/nginx/sites-available/default
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: start nginx service
+      systemd:
+        name: nginx
+        state: started
+
+
+#    - name: enable percona on system start up
+#      systemd:
+#        name: mysqld
+#        enabled: yes
+
+#    - name: disable firewalld service on system start up
+#      systemd:
+#        name: firewalld
+#        enabled: no
+
+#    - name: stop firewalld service
+#      systemd:
+#        name: firewalld
+#        state: stopped
+
+
+#    - name: start percona service
+#      systemd:
+#        name: mysqld
+#        state: started
+
+#    - name: start httpd service
+#      systemd:
+#        name: httpd
+#        state: started
+#
