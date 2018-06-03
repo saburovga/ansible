@@ -20,11 +20,6 @@
         state: latest
 
 
-#    - name: install percona
-#      yum:
-#        name: Percona-Server-server-57
-#        state: latest
-
     - name: install apache2
       apt:
         name: apache2
@@ -162,24 +157,3 @@
         name: mysql
         enabled: yes
 
-#    - name: disable firewalld service on system start up
-#      systemd:
-#        name: firewalld
-#        enabled: no
-
-#    - name: stop firewalld service
-#      systemd:
-#        name: firewalld
-#        state: stopped
-
-
-#    - name: start percona service
-#      systemd:
-#        name: mysqld
-#        state: started
-
-#    - name: start httpd service
-#      systemd:
-#        name: httpd
-#        state: started
-#
