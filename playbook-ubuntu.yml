@@ -16,7 +16,7 @@
 
     - name: install mc and nano
       apt:
-        name: mc,nano
+        name: mc,nano,htop
         state: latest
 
 
@@ -59,12 +59,12 @@
         state: stopped
 
 
-    - name: apache2 listen on port 8080
-      lineinfile: 
-        dest: /etc/apache2/ports.conf 
-        regexp: "^Listen 80" 
-        line: "Listen 8080" 
-        state: present
+#    - name: apache2 listen on port 8080
+#      lineinfile: 
+#        dest: /etc/apache2/ports.conf 
+#        regexp: "^Listen 80" 
+#        line: "Listen 8080" 
+#        state: present
 
     - name: apache2 virtualhost listen on port 8080
       lineinfile: 
@@ -73,7 +73,7 @@
         line: "<VirtualHost *:8080>"
         state: present
 
-    - name: copy config file for php
+    - name: copy config file for apache2
       copy:
         src: /root/ansible/roles/apache/templates/apache2.conf
         dest: /etc/apache2/apache2.conf
